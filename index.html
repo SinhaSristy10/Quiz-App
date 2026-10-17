@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizNova - Interactive Knowledge Challenge</title>
+  <meta name="description" content="A modern, responsive Quiz Web App featuring multiple categories, real-time timer, combo streaks, lifelines, detailed result review, and persistent high scores.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="ambient-glow glow-1" aria-hidden="true"></div>
+  <div class="ambient-glow glow-2" aria-hidden="true"></div>
+
+  <!-- Header Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-logo" role="banner">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+          </svg>
+        </div>
+        <span class="brand-name">Quiz<span class="brand-highlight">Nova</span></span>
+      </div>
+
+      <div class="header-actions">
+        <button id="sound-toggle" class="icon-btn" type="button" title="Toggle Sound Effects" aria-label="Toggle Sound Effects">
+          <span id="sound-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="app-main">
+
+    <!-- ================= SCREEN 1: START SCREEN ================= -->
+    <section id="screen-start" class="screen">
+      <div class="start-hero">
+        <div class="hero-badge">⚡ Interactive Quiz Arena</div>
+        <h1 class="hero-title">Challenge Your Knowledge</h1>
+        <p class="hero-subtitle">Pick a category, beat the clock, build answer streaks, and claim your spot on the leaderboard.</p>
+      </div>
+
+      <div class="config-grid">
+        <!-- Step 1: Category -->
+        <div class="config-card">
+          <div class="card-step-header">
+            <span class="step-num">01</span>
+            <div>
+              <h2 class="card-title">Select Topic</h2>
+              <p class="card-desc">Choose your battleground</p>
+            </div>
+          </div>
+          <div id="category-list" class="category-grid" role="radiogroup" aria-label="Select quiz category">
+            <!-- Dynamically populated from QUIZ_CATEGORIES in questions.js -->
+          </div>
+        </div>
+
+        <!-- Step 2: Settings -->
+        <div class="config-card">
+          <div class="card-step-header">
+            <span class="step-num">02</span>
+            <div>
+              <h2 class="card-title">Quiz Settings</h2>
+              <p class="card-desc">Tune your gameplay experience</p>
+            </div>
+          </div>
+
+          <!-- Difficulty -->
+          <div class="setting-group">
+            <label class="setting-label">Difficulty Tier</label>
+            <div class="pills-row" role="radiogroup">
+              <button type="button" class="pill-btn diff-pill active" data-difficulty="all">Mixed</button>
+              <button type="button" class="pill-btn diff-pill" data-difficulty="easy">Easy</button>
+              <button type="button" class="pill-btn diff-pill" data-difficulty="medium">Medium</button>
+              <button type="button" class="pill-btn diff-pill" data-difficulty="hard">Hard</button>
+            </div>
+          </div>
+
+          <!-- Question Count -->
+          <div class="setting-group">
+            <label class="setting-label">Number of Questions</label>
+            <div class="pills-row" role="radiogroup">
+              <button type="button" class="pill-btn count-pill" data-count="5">5 Qs</button>
+              <button type="button" class="pill-btn count-pill active" data-count="10">10 Qs</button>
+              <button type="button" class="pill-btn count-pill" data-count="15">15 Qs</button>
+              <button type="button" class="pill-btn count-pill" data-count="20">20 Qs</button>
+            </div>
+          </div>
+
+          <!-- Timer Option -->
+          <div class="setting-group">
+            <label class="setting-label">Timer Per Question</label>
+            <div class="pills-row" role="radiogroup">
+              <button type="button" class="pill-btn timer-pill" data-timer="10">10s (Blitz)</button>
+              <button type="button" class="pill-btn timer-pill active" data-timer="15">15s (Standard)</button>
+              <button type="button" class="pill-btn timer-pill" data-timer="30">30s (Relaxed)</button>
+              <button type="button" class="pill-btn timer-pill" data-timer="0">Untimed</button>
+            </div>
+          </div>
+
+          <!-- Live Available Counter -->
+          <div class="pool-meta">
+            Available questions in pool: <strong id="total-questions-count">60</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="start-actions">
+        <button id="start-quiz-btn" class="btn btn-primary btn-large btn-glow" type="button">
+          <span>Start Challenge</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+
+        <button id="view-leaderboard-btn" class="btn btn-secondary" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7"></circle>
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+          </svg>
+          <span>High Scores</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= SCREEN 2: ACTIVE QUIZ SCREEN ================= -->
+    <section id="screen-quiz" class="screen hidden" aria-live="polite">
+      <!-- Top Quiz Bar -->
+      <div class="quiz-topbar">
+        <button id="quit-quiz-btn" class="btn-text-icon" type="button" title="Exit Quiz">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6L6 18M6 6l12 12"></path>
+          </svg>
+          <span>Exit</span>
+        </button>
+
+        <div class="progress-wrap">
+          <div class="progress-info">
+            <span id="progress-text" class="progress-label">Question 1 of 10</span>
+            <div id="streak-badge" class="streak-pill">
+              <span class="streak-icon">🔥</span>
+              <span id="streak-count">2x Streak</span>
+            </div>
+          </div>
+          <div class="progress-track">
+            <div id="quiz-progress-bar" class="progress-fill" style="width: 10%;"></div>
+          </div>
+        </div>
+
+        <div class="quiz-hud-right">
+          <div class="score-pill">
+            <span class="score-label">Score</span>
+            <span id="current-score" class="score-value">0</span>
+          </div>
+
+          <!-- Animated Circular Timer -->
+          <div id="timer-container" class="timer-box" title="Time remaining">
+            <svg class="timer-svg" width="60" height="60" viewBox="0 0 60 60">
+              <circle class="timer-bg" cx="30" cy="30" r="26"></circle>
+              <circle id="timer-svg-circle" class="timer-meter" cx="30" cy="30" r="26"></circle>
+            </svg>
+            <span id="timer-display" class="timer-num">15</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lifelines Bar -->
+      <div class="lifelines-container" role="toolbar" aria-label="Lifelines">
+        <span class="lifelines-title">Lifelines:</span>
+        <button id="lifeline-fifty" class="lifeline-btn" type="button" title="Remove two incorrect options">
+          <span class="lifeline-icon">✂️</span>
+          <span class="lifeline-name">50:50</span>
+        </button>
+        <button id="lifeline-skip" class="lifeline-btn" type="button" title="Skip this question without losing points">
+          <span class="lifeline-icon">⏭️</span>
+          <span class="lifeline-name">Skip</span>
+        </button>
+        <button id="lifeline-time" class="lifeline-btn" type="button" title="Add 10 extra seconds to the clock">
+          <span class="lifeline-icon">⏱️</span>
+          <span class="lifeline-name">+10s</span>
+        </button>
+      </div>
+
+      <!-- Main Question Container -->
+      <div class="question-container">
+        <div class="question-header">
+          <span id="question-category-badge" class="badge-category">Tech & Coding</span>
+          <span id="question-diff-badge" class="badge-difficulty badge-easy">EASY</span>
+        </div>
+
+        <h2 id="question-text" class="question-title">Loading question...</h2>
+
+        <div id="options-container" class="options-grid" role="group" aria-label="Question answer options">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Post-answer explanation box -->
+        <div id="explanation-box" class="explanation-card hidden">
+          <div class="explanation-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span>Insight & Explanation</span>
+          </div>
+          <p id="explanation-text" class="explanation-body"></p>
+        </div>
+
+        <div class="question-actions">
+          <button id="next-question-btn" class="btn btn-primary btn-large hidden" type="button">
+            Next Question →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SCREEN 3: RESULTS SCREEN ================= -->
+    <section id="screen-results" class="screen hidden">
+      <div class="results-card">
+        <!-- Circular Score Gauge -->
+        <div class="result-gauge-wrap">
+          <svg class="result-svg" width="160" height="160" viewBox="0 0 160 160">
+            <circle class="result-svg-bg" cx="80" cy="80" r="68"></circle>
+            <circle id="result-svg-circle" class="result-svg-meter" cx="80" cy="80" r="68"></circle>
+          </svg>
+          <div class="result-gauge-text">
+            <span id="result-score-pct" class="gauge-pct">80%</span>
+            <span class="gauge-label">Accuracy</span>
+          </div>
+        </div>
+
+        <div id="result-score-badge" class="result-points-pill">
+          <span id="result-score-text">1,450 PTS</span>
+        </div>
+
+        <h1 id="result-title" class="result-headline">Quiz Master! 🌟</h1>
+        <p id="result-subtitle" class="result-subtext">You demonstrated outstanding knowledge and speed.</p>
+
+        <!-- Stats Matrix -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-icon">🎯</span>
+            <div class="stat-value" id="stat-correct">8 / 10</div>
+            <div class="stat-label">Correct Answers</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">📊</span>
+            <div class="stat-value" id="stat-accuracy">80%</div>
+            <div class="stat-label">Accuracy</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">⏱️</span>
+            <div class="stat-value" id="stat-time">1m 24s</div>
+            <div class="stat-label">Total Time</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🔥</span>
+            <div class="stat-value" id="stat-max-streak">5x</div>
+            <div class="stat-label">Max Streak</div>
+          </div>
+        </div>
+
+        <!-- Leaderboard Name Save Form -->
+        <form id="save-score-form" class="save-form">
+          <label for="player-name-input" class="save-form-label">Save your score to High Scores:</label>
+          <div class="save-input-row">
+            <input type="text" id="player-name-input" class="form-input" placeholder="Enter your name / handle" maxlength="20" required>
+            <button id="save-score-btn" type="submit" class="btn btn-secondary">Save Record</button>
+          </div>
+          <p id="save-message" class="save-feedback"></p>
+        </form>
+
+        <!-- Action Buttons -->
+        <div class="results-actions">
+          <button id="play-again-btn" class="btn btn-primary btn-large btn-glow" type="button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+            <span>Play Again</span>
+          </button>
+          <button id="return-home-btn" class="btn btn-secondary" type="button">
+            <span>Change Topic / Settings</span>
+          </button>
+        </div>
+
+        <!-- Full Detailed Answer Review -->
+        <div class="review-section">
+          <div class="review-section-header">
+            <h3 class="review-title">Detailed Question Review</h3>
+            <div class="review-filter-tabs">
+              <button type="button" class="review-filter-btn active" data-filter="all">All</button>
+              <button type="button" class="review-filter-btn" data-filter="correct">Correct</button>
+              <button type="button" class="review-filter-btn" data-filter="wrong">Incorrect</button>
+            </div>
+          </div>
+
+          <div id="review-list" class="review-items-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SCREEN 4: LEADERBOARD SCREEN ================= -->
+    <section id="screen-leaderboard" class="screen hidden">
+      <div class="leaderboard-card">
+        <div class="leaderboard-header">
+          <div class="leaderboard-icon-wrap">🏆</div>
+          <h1 class="leaderboard-title">Hall of Fame</h1>
+          <p class="leaderboard-subtitle">Top quiz contenders saved in your local session history.</p>
+        </div>
+
+        <div class="table-responsive">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Score</th>
+                <th>Accuracy</th>
+                <th>Category</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="leaderboard-empty" class="empty-state hidden">
+          <div class="empty-icon">🎮</div>
+          <h3>No High Scores Yet</h3>
+          <p>Complete a quiz and save your score to top the leaderboard!</p>
+        </div>
+
+        <div class="leaderboard-actions">
+          <button id="leaderboard-home-btn" class="btn btn-primary" type="button">
+            Back to Home
+          </button>
+          <button id="clear-leaderboard-btn" class="btn btn-danger-outline" type="button">
+            Clear Leaderboard
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Quit Confirmation Modal -->
+  <div id="modal-backdrop" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <div class="modal-icon">⚠️</div>
+      <h3 id="modal-title" class="modal-title">Exit Current Quiz?</h3>
+      <p class="modal-desc">Your current quiz progress and score will be lost if you leave now.</p>
+      <div class="modal-actions">
+        <button id="cancel-quit-btn" class="btn btn-secondary" type="button">Continue Playing</button>
+        <button id="confirm-quit-btn" class="btn btn-danger" type="button">Exit to Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/questions.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/confetti.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
