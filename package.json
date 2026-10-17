@@ -1,0 +1,19 @@
+{
+  "name": "quiz-app",
+  "version": "1.0.0",
+  "description": "Interactive Knowledge Challenge Quiz App featuring categories, timer, scoring, lifelines, results review, and leaderboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "quiz-app",
+    "trivia",
+    "educational",
+    "timer",
+    "scoring"
+  ],
+  "author": "Antigravity Pair Programmer",
+  "license": "MIT"
+}
