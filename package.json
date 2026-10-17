@@ -2,10 +2,9 @@
   "name": "quiz-app",
   "version": "1.0.0",
   "description": "Interactive Knowledge Challenge Quiz App featuring categories, timer, scoring, lifelines, results review, and leaderboard",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node scripts/server.js",
+    "dev": "node scripts/server.js"
   },
   "keywords": [
     "quiz-app",
